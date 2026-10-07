@@ -136,8 +136,7 @@ public class AccountInformationExpert {
         
         if (account.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException(
-                    "Saldo insuficiente. Saldo actual: " + account.getBalance() + 
-                    ", monto solicitado: " + amount);
+                    account.getAccountNumber(), account.getBalance(), amount);
         }
     }
 }

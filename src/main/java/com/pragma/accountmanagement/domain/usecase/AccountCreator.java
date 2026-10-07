@@ -20,7 +20,7 @@ public class AccountCreator {
         }
 
         if (initialBalance == null || initialBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InsufficientFundsException("El saldo inicial no puede ser negativo");
+            throw new IllegalArgumentException("El saldo inicial no puede ser negativo");
         }
 
         Account newAccount = new Account(accountNumber, customerId, initialBalance, accountType);
