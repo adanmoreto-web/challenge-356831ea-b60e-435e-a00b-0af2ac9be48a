@@ -33,10 +33,10 @@ public class AccountController {
     @Operation(summary = "Crear cuenta", description = "Crea una nueva cuenta bancaria")
     public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto) {
         Account account = accountFacade.createAccount(
-                accountDto.getAccountNumber(),
-                accountDto.getCustomerId(),
-                accountDto.getInitialBalance() != null ? accountDto.getInitialBalance() : BigDecimal.ZERO,
-                accountDto.getAccountType()
+                accountDto.accountNumber(),
+                accountDto.customerId(),
+                accountDto.balance() != null ? accountDto.balance() : BigDecimal.ZERO,
+                accountDto.accountType()
         );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(AccountDto.fromDomain(account));
