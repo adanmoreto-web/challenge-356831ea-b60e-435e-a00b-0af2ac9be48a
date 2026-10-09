@@ -2,6 +2,7 @@ package com.pragma.accountmanagement.domain.usecase;
 
 import com.pragma.accountmanagement.domain.model.Account;
 import com.pragma.accountmanagement.domain.ports.AccountRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,32 +12,30 @@ import java.util.UUID;
  * Implementa el patrón GRASP Controlador.
  * Esta clase actúa como controlador de aplicación, siendo el intermediary
  * entre la capa de presentación (controladores REST) y los casos de uso del dominio.
- * Coordina las operaciones y delega a las clases Expertas en Información.
+ * Coordina las operaciones y delega a las clases Expertas en Información y Creadoras.
  */
+@Service
 public class AccountControllerFacade {
 
     private final AccountRepository accountRepository;
     private final AccountInformationExpert informationExpert;
+    private final AccountCreator accountCreator;
 
-    public AccountControllerFacade(AccountRepository accountRepository) {
+    public AccountControllerFacade(AccountRepository accountRepository,
+                                   AccountInformationExpert informationExpert,
+                                   AccountCreator accountCreator) {
         this.accountRepository = accountRepository;
-        this.informationExpert = new AccountInformationExpert(accountRepository);
+        this.informationExpert = informationExpert;
+        this.accountCreator = accountCreator;
     }
 
     /**
      * Crea una nueva cuenta en el sistema.
-     * Delega la creación al AccountCreator y registra la cuenta.
+     * Delega la creación al AccountCreator (Patrón Creador).
      */
     public Account createAccount(String accountNumber, String customerId, 
                                   BigDecimal initialBalance, String accountType) {
-        if (accountRepository.existsByAccountNumber(accountNumber)) {
-            throw new IllegalArgumentException(
-                    "Ya existe una cuenta con el número: " + accountNumber);
-        }
-        
-        Account newAccount = new Account(accountNumber, customerId, 
-                initialBalance, accountType);
-        return accountRepository.save(newAccount);
+        return accountCreator.create(accountNumber, customerId, initialBalance, accountType);
     }
 
     /**
@@ -59,7 +58,6 @@ public class AccountControllerFacade {
     public Account withdraw(UUID accountId, BigDecimal amount) {
         validatePositiveAmount(amount);
         informationExpert.validateAccountForOperation(accountId);
-        informationExpert.validateSufficientFunds(accountId, amount);
         
         Account account = informationExpert.getAccountDetails(accountId);
         account.withdraw(amount);
