@@ -5,6 +5,8 @@ import com.pragma.accountmanagement.domain.ports.AccountRepository;
 import com.pragma.accountmanagement.infrastructure.exception.AccountNotFoundException;
 import com.pragma.accountmanagement.infrastructure.exception.InsufficientFundsException;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.UUID;
  * incluyendo consultas de saldo, historial de transacciones y estado de cuenta.
  * Tiene acceso a todos los datos necesarios para realizar estos cálculos y consultas.
  */
+@Component
 public class AccountInformationExpert {
 
     private final AccountRepository accountRepository;
@@ -123,20 +126,6 @@ public class AccountInformationExpert {
         if (!account.isActive()) {
             throw new IllegalStateException(
                     "La cuenta no está activa para realizar operaciones");
-        }
-    }
-
-    /**
-     * Valida si hay fondos suficientes para un retiro.
-     */
-    public void validateSufficientFunds(UUID accountId, BigDecimal amount) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(
-                        "Cuenta no encontrada con ID: " + accountId));
-        
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new InsufficientFundsException(
-                    account.getAccountNumber(), account.getBalance(), amount);
         }
     }
 }

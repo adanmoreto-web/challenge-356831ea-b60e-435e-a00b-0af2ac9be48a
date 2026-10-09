@@ -4,8 +4,11 @@ import com.pragma.accountmanagement.domain.model.Account;
 import com.pragma.accountmanagement.domain.ports.AccountRepository;
 import com.pragma.accountmanagement.infrastructure.exception.InsufficientFundsException;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 
+@Component
 public class AccountCreator {
 
     private final AccountRepository accountRepository;
